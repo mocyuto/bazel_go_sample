@@ -6,7 +6,7 @@ bazel go sample
 
 for macOS
 ```
-brew install bazel
+brew install bazelisk
 ```
 
 ## Usage
