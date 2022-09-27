@@ -1,0 +1,19 @@
+load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+
+go_binary(
+    name = "hello",
+    embed = [":bazel_go_sample_lib"],
+    visibility = ["//visibility:public"],
+)
+
+load("@bazel_gazelle//:def.bzl", "gazelle")
+
+# gazelle:prefix github.com/mocyuto/bazel_go_sample
+gazelle(name = "gazelle")
+
+go_library(
+    name = "bazel_go_sample_lib",
+    srcs = ["hello.go"],
+    importpath = "github.com/mocyuto/bazel_go_sample",
+    visibility = ["//visibility:private"],
+)
