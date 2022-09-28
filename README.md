@@ -11,13 +11,11 @@ brew install bazelisk
 
 ## Usage
 
-### use bazelisk
+### run binary
 ```
-bazelisk run //:hello
-```
-### use bazel
-```
-bazel run //:hello
+bazelisk run //:gazelle-update-repos # create deps.bzl
+bazelisk run //:gazelle # import go libraries for bazel
+bazelisk run //:hello # execute binary
 ```
 
 ### run docker image

@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/pborman/uuid"
+)
 
 func main() {
-	fmt.Println("hello world!")
+	fmt.Printf("hello world!: %s", uuid.NewRandom().String())
 }

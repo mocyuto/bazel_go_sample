@@ -1,23 +1,35 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
+load("@bazel_gazelle//:def.bzl", "gazelle")
+load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 
 go_binary(
     name = "hello",
     embed = [":bazel_go_sample_lib"],
     visibility = ["//visibility:public"],
 )
+
 go_library(
     name = "bazel_go_sample_lib",
     srcs = ["hello.go"],
     importpath = "github.com/mocyuto/bazel_go_sample",
     visibility = ["//visibility:private"],
+    deps = ["@com_github_pborman_uuid//:uuid"],
 )
-
-load("@bazel_gazelle//:def.bzl", "gazelle")
 
 # gazelle:prefix github.com/mocyuto/bazel_go_sample
 gazelle(name = "gazelle")
 
-load("@io_bazel_rules_docker//container:container.bzl", "container_image")
+gazelle(
+    name = "gazelle-update-repos",
+    args = [
+        "-from_file=go.mod",
+        "-to_macro=deps.bzl%go_dependencies",
+        "-prune",
+    ],
+    command = "update-repos",
+)
+
 container_image(
     name = "basic_alpine",
     base = "@alpine_linux_arm64//image",
@@ -25,12 +37,12 @@ container_image(
     entrypoint = ["echo"],
 )
 
-load("@io_bazel_rules_docker//go:image.bzl", "go_image")
 go_image(
     name = "go_image",
     srcs = ["hello.go"],
-    visibility = ["//visibility:public"],
-    goos = "linux",
     goarch = "amd64",
+    goos = "linux",
     importpath = "github.com/mocyuto/bazel_go_sample",
+    visibility = ["//visibility:public"],
+    deps = ["@com_github_pborman_uuid//:uuid"],
 )
