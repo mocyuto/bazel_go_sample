@@ -2,6 +2,7 @@ load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 load("@bazel_gazelle//:def.bzl", "gazelle")
 load("@io_bazel_rules_docker//container:container.bzl", "container_image")
 load("@io_bazel_rules_docker//go:image.bzl", "go_image")
+load("@io_bazel_rules_docker//docker/util:run.bzl", "container_run_and_extract")
 
 go_binary(
     name = "hello",
@@ -30,13 +31,32 @@ gazelle(
     command = "update-repos",
 )
 
+# multi stage build
 container_image(
-    name = "basic_alpine",
+    name = "base",
     base = "@alpine_linux_arm64//image",
-    cmd = ["Hello World!"],
-    entrypoint = ["echo"],
 )
 
+container_run_and_extract(
+    name = "extract_a1",
+    commands = ["echo 'hello world' > /a1.txt"],
+    extract_file = "/a1.txt",
+    image = ":base.tar",
+)
+
+container_image(
+    name = "multi_stage_build",
+    base = "@alpine_linux_arm64//image",
+    cmd = [
+        "cat",
+        "a1.txt",
+    ],
+    files = [
+        "extract_a1/a1.txt",
+    ],
+)
+
+# create go image
 go_image(
     name = "go_image",
     srcs = ["hello.go"],

@@ -21,6 +21,6 @@ bazelisk run //:hello # execute binary
 ### run docker image
 
 ```
-bazelisk run //:basic_alpine
+bazelisk run //:multi_stage_build
 bazelisk run //:go_image
 ```
